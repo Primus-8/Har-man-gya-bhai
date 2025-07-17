@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Image Upload</title>
+</head>
+<body>
+  <h2>Upload Image</h2>
+  <input type="file" id="fileInput" />
+  <button onclick="uploadFile()">Upload</button>
+  <p id="result"></p>
+
+  <script>
+    async function uploadFile() {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) {
+        alert("Please select a file");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("https://back-zj7r.vercel.app/api/upload", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById("result").innerHTML = `✅ Uploaded: <a href="${data.url}" target="_blank">${data.url}</a>`;
+        } else {
+          document.getElementById("result").innerText = "❌ Error: " + data.error;
+        }
+      } catch (err) {
+        console.error("❌ Upload failed:", err);
+        document.getElementById("result").innerText = "❌ Upload failed. See console.";
+      }
+    }
+  </script>
+</body>
+</html>
