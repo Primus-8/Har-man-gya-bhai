@@ -1,64 +1,52 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Image Uploader</title>
+  <title>Simple File Uploader (Backend Connected)</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    input[type="file"] {
-      margin-bottom: 10px;
-    }
-    img {
-      margin-top: 20px;
-      max-width: 300px;
-    }
+    body { font-family: Arial, sans-serif; padding: 30px; }
+    input[type="file"] { margin-bottom: 12px; }
+    pre { margin-top: 20px; background: #f6f6f6; padding: 10px; }
   </style>
 </head>
 <body>
-  <h2>Image Uploader</h2>
+  <h2>File Uploader (Direct to Backend)</h2>
   <form id="uploadForm">
-    <input type="file" name="image" id="imageInput" required />
-    <br />
+    <input type="file" name="file" id="fileInput" required />
     <button type="submit">Upload</button>
   </form>
-
-  <div id="result"></div>
+  <pre id="result"></pre>
 
   <script>
-    const form = document.getElementById("uploadForm");
-    const result = document.getElementById("result");
+    // *** Change to your deployed backend URL
+    const API_URL = "https://my-backend-project-hekt.vercel.app/api/upload";
 
-    form.addEventListener("submit", async (e) => {
+    document.getElementById("uploadForm").onsubmit = async function(e) {
       e.preventDefault();
-      const fileInput = document.getElementById("imageInput");
+      const fileInput = document.getElementById("fileInput");
+      if (!fileInput.files.length) {
+        document.getElementById("result").textContent = "File choose karo!";
+        return;
+      }
       const formData = new FormData();
-      formData.append("image", fileInput.files[0]);
+      formData.append("file", fileInput.files[0]);
+
+      document.getElementById("result").textContent = "Uploading...";
 
       try {
-        const res = await fetch("https://my-backend-project-hekt.vercel.app/api/upload", {
-          method: "GET",
+        const res = await fetch(API_URL, {
+          method: "POST",
           body: formData
         });
-
         const data = await res.json();
-
-        if (res.ok) {
-          result.innerHTML = `
-            <p> Uploaded Successfully!</p>
-            <a href="${data.url}" target="_blank">Open Image</a><br/>
-            <img src="${data.url}" alt="Uploaded Image"/>
-          `;
-        } else {
-          result.innerHTML = `<p>Error: ${data.error || "Unknown error"}</p>`;
-        }
+        document.getElementById("result").textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        result.innerHTML = `<p> Error: ${err.message}</p>`;
+        document.getElementById("result").textContent = "Network ya server error: " + err.message;
       }
-    });
+    }
   </script>
 </body>
 </html>
