@@ -39,7 +39,7 @@
       formData.append("image", fileInput.files[0]);
 
       try {
-        const res = await fetch("https://cdn-i19eyjn70-primus-8s-projects.vercel.app/upload", {
+        const res = await fetch("https://my-backend-project-hekt.vercel.app/api/upload", {
           method: "POST",
           body: formData
         });
